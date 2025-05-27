@@ -16,7 +16,7 @@ api_hash = '5a2684512006853f2e48aca9652d83ea'
 bot_token = '7862725675:AAF4dXAm4vRO-Vhf-hQQO3Ms8g80zGgze_8'
 output_channel_id = -1002318245173
 session_name = "pump_input_account"
-ref_link_prefix = "https://t.me/paris_trojanbot?start=r-manishd1-"
+ref_link_prefix = "https://t.me/paris_trojanbot?start=r-choudhary-"
 CA_MAP_FILE = "ca_to_msg_ids.json"
 
 input_channel_ids = [-1002380293749, -1002520621518]
