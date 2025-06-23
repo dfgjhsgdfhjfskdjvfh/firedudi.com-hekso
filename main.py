@@ -16,7 +16,8 @@ api_hash = '5a2684512006853f2e48aca9652d83ea'
 bot_token = '7862725675:AAF4dXAm4vRO-Vhf-hQQO3Ms8g80zGgze_8'
 output_channel_id = -1002318245173
 session_name = "pump_input_account"
-ref_link_prefix = "https://t.me/paris_trojanbot?start=r-choudhary-"
+ref_link_prefix = "https://t.me/paris_trojanbot?start=r-choudhary-"  # for pump message
+vip_link_fixed = "https://t.me/FireCallsVip"
 CA_MAP_FILE = "ca_to_msg_ids.json"
 
 input_channel_ids = [-1002380293749, -1002520621518]
@@ -138,8 +139,6 @@ async def handle_message(event):
             print(f"⚡ Time Taken: {round(end_time - start_time, 3)}s")
 
     if re.search(r'(🌕|🌙|📈|🎉)?\s?\d+(\.\d+)?x', text, re.IGNORECASE) and event.is_reply:
-        perf = re.split(r'\(|\|', text)[0].strip()
-        print(f"\n📈 Performance reply detected: {perf}")
         try:
             reply = await event.get_reply_message()
             if reply:
@@ -150,15 +149,29 @@ async def handle_message(event):
                     print(f"🔗 Matched CA from replied message: {ca}")
                     ca_map = load_ca_mapping()
                     if ca in ca_map:
+                        base_perf = re.search(r'(🌕|🌙|📈|🎉)?\s?\d+(\.\d+)?x', text)
+                        extra_perf = re.search(r'\(\s*[\d\.]+x\s*from\s*(VIP|vip)\s*\)', text, re.IGNORECASE)
+
+                        perf_reply = base_perf.group(0).strip() if base_perf else ""
+                        if extra_perf:
+                            vip_part = extra_perf.group(0).strip()
+                            vip_link = "[VIP](https://t.me/FireXCalls/2)"
+                            vip_formatted = re.sub(r'\bVIP\b', vip_link, vip_part, flags=re.IGNORECASE)
+                            perf_reply += f"{vip_formatted}"
+
+                        print(f"📈 Final formatted reply: {perf_reply}")
+
                         for chat_id, msg_id in ca_map[ca]:
-                            print(f"↪️ Replying to msg {msg_id} in {chat_id} with {perf}")
+                            print(f"↪️ Replying to msg {msg_id} in {chat_id}")
                             try:
                                 requests.post(
                                     f"https://api.telegram.org/bot{bot_token}/sendMessage",
                                     data={
                                         "chat_id": chat_id,
-                                        "text": perf,
-                                        "reply_to_message_id": msg_id
+                                        "text": perf_reply,
+                                        "reply_to_message_id": msg_id,
+                                        "parse_mode": "Markdown",
+                                        "disable_web_page_preview": True
                                     }
                                 )
                             except Exception as e:
@@ -166,15 +179,18 @@ async def handle_message(event):
         except Exception as e:
             print("❌ Error in performance detection:", e)
 
-# --- Full runner ---
-def full_main():
-    keep_alive()
-    asyncio.run(start_bot())
+# --- Start everything ---
+def start_telethon():
+    async def main():
+        await client.start()
+        print("🔥 Bot is live and ultra-fast now...")
+        await client.run_until_disconnected()
 
-async def start_bot():
-    await client.start()
-    print("🔥 Bot is live and ultra-fast now...")
-    await client.run_until_disconnected()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(main())
 
 if __name__ == "__main__":
-    full_main()
+    keep_alive()
+    telethon_thread = threading.Thread(target=start_telethon)
+    telethon_thread.start()
