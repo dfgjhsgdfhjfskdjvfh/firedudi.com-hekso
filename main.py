@@ -155,7 +155,7 @@ async def handle_message(event):
                         perf_reply = base_perf.group(0).strip() if base_perf else ""
                         if extra_perf:
                             vip_part = extra_perf.group(0).strip()
-                            vip_link = "[VIP](https://t.me/FireXCalls/2)"
+                            vip_link = "[VIP](https://t.me/FireCallsVip)"
                             vip_formatted = re.sub(r'\bVIP\b', vip_link, vip_part, flags=re.IGNORECASE)
                             perf_reply += f"{vip_formatted}"
 
